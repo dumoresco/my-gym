@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+enum GymClientStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  UNPAID
+}
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String     @id @default(uuid()) @db.Uuid
+  name  String
+  email String  @unique
+  password String 
+
+  @@map("users")
+  GymClient GymClient[]
+  Subscription Subscription[] 
+}
+
+model GymClient {
+  id         String  @id @default(uuid()) @db.Uuid
+  name       String
+  email      String  @unique
+  phone      String
+  status     GymClientStatus
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  inactiveAt DateTime? 
+  user       User    @relation(fields: [ownerId], references: [id])
+  ownerId    String @db.Uuid
+
+  paymentStatus PaymentStatus?
+  subscriptionLastPayment DateTime?
+
+  Subscription Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String @db.Uuid
+
+  @@map("gym_clients")
+  Payment Payment[]
+}
+
+model Subscription {
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String
+  price      Float
+  status     SubscriptionStatus
+  startDate  DateTime
+  endDate    DateTime
+  clientId   String?   @db.Uuid 
+  userId     String   @db.Uuid
+
+  @@map("subscriptions")
+  GymClient GymClient[]
+  User User[]
+  Payment Payment[]
+}
+
+model Payment {
+  id            String   @id @default(uuid()) @db.Uuid
+  clientId      String   @db.Uuid
+  subscriptionId String   @db.Uuid
+  amount        Float
+  status        PaymentStatus
+  paymentDate   DateTime @default(now())
+
+  GymClient     GymClient @relation(fields: [clientId], references: [id])
+  Subscription  Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@map("payments")
+}
+
