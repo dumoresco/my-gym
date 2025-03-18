@@ -6,6 +6,7 @@ import { prismaClient } from "../../libs/prismaClient";
 import { UserNotFound } from "../../errors/UserNotFound";
 import { SubscriptionNotFound } from "../../errors/SubscriptionNotFound";
 import { AccountAlreadyExists } from "../../errors/AccountAlreadExists";
+import axios from "axios";
 
 interface IInputCreateGymClientUseCase {
   name: string;
@@ -13,6 +14,7 @@ interface IInputCreateGymClientUseCase {
   phone: string;
   userId: string;
   subscriptionId: string;
+  taxId: string;
 }
 
 interface IOutputCreateGymClientUseCase {
@@ -25,6 +27,8 @@ interface IOutputCreateGymClientUseCase {
   updatedAt: Date;
   inactiveAt?: Date;
   subscriptionId: string;
+  taxId: string;
+  abacatePayCustomerId?: string;
 }
 
 export class CreateGymClientUseCase {
@@ -34,6 +38,7 @@ export class CreateGymClientUseCase {
     phone,
     userId,
     subscriptionId,
+    taxId,
   }: IInputCreateGymClientUseCase): Promise<IOutputCreateGymClientUseCase> {
     const isValidUUID = validateUUID(userId);
 
@@ -71,6 +76,32 @@ export class CreateGymClientUseCase {
       throw new AccountAlreadyExists();
     }
 
+    // formata o taxId para 123.456.789-01
+    const formattedTaxId = taxId.replace(
+      /(\d{3})(\d{3})(\d{3})(\d{2})/,
+      "$1.$2.$3-$4"
+    );
+    // cria o client no abacate pay
+    const response = await axios.post(
+      "https://api.abacatepay.com/v1/customer/create",
+      {
+        name: name,
+        email: email,
+        cellphone: phone,
+        taxId: formattedTaxId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+        },
+      }
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Error creating client on Abacate Pay");
+    }
+
     const gymClient = await prismaClient.gymClient.create({
       data: {
         name,
@@ -82,6 +113,8 @@ export class CreateGymClientUseCase {
         updatedAt: new Date(),
         subscriptionId,
         paymentStatus: "UNPAID",
+        taxId,
+        abacatePayCustomerId: response.data.data.id,
       },
     });
 
@@ -94,6 +127,8 @@ export class CreateGymClientUseCase {
       createdAt: gymClient.createdAt,
       updatedAt: gymClient.updatedAt,
       subscriptionId: gymClient.subscriptionId,
+      taxId: gymClient.taxId,
+      abacatePayCustomerId: gymClient.abacatePayCustomerId ?? undefined,
     };
   }
 }

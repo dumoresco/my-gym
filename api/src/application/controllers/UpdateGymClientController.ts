@@ -93,6 +93,15 @@ export class UpdateGymClientController implements IController {
           paymentDate: new Date(),
           subscriptionId: current_client.subscriptionId,
         });
+
+        await prismaClient.gymClient.update({
+          where: {
+            id: current_client.id,
+          },
+          data: {
+            subscriptionLastPayment: new Date(),
+          },
+        });
       }
 
       return {

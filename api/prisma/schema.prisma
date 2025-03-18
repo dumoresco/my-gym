@@ -47,12 +47,15 @@ model GymClient {
   inactiveAt DateTime? 
   user       User    @relation(fields: [ownerId], references: [id])
   ownerId    String @db.Uuid
+  taxId      String 
 
   paymentStatus PaymentStatus?
   subscriptionLastPayment DateTime?
 
   Subscription Subscription @relation(fields: [subscriptionId], references: [id])
   subscriptionId String @db.Uuid
+
+  abacatePayCustomerId String?
 
   @@map("gym_clients")
   Payment Payment[]

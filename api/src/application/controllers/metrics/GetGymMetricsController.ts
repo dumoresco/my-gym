@@ -1,6 +1,7 @@
 import { IController, IRequest, IResponse } from "../../interfaces/IController";
 import { InvalidFormatUUID } from "../../errors/InvalidFormatUUID";
 import { GetGymMetricsUseCase } from "../../useCases/metrics/GetGymMetricsUseCase";
+import { UserNotFound } from "../../errors/UserNotFound";
 
 export class GetGymMetricsController implements IController {
   constructor(private readonly getGymMetricsController: GetGymMetricsUseCase) {}
@@ -35,6 +36,14 @@ export class GetGymMetricsController implements IController {
           statusCode: 400,
           body: {
             message: "Invalid userId format. It must be a valid UUID.",
+          },
+        };
+      }
+      if (err instanceof UserNotFound) {
+        return {
+          statusCode: 404,
+          body: {
+            message: "User not found.",
           },
         };
       }

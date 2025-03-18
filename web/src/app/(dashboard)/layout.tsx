@@ -35,6 +35,7 @@ export default async function DashboardLayout({
               <DynamicBreadcrumbs />
             </div>
             <ThemeToggle />
+
             {/* <div>{session && <NavUser user={session.user} />}</div> */}
           </div>
         </header>

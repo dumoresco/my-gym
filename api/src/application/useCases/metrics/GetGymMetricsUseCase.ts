@@ -49,7 +49,7 @@ export class GetGymMetricsUseCase {
     );
 
     const inactiveClients = gymClients.filter(
-      (client) => client.status === "INACTIVE"
+      (client) => client.status === "INACTIVE" || client.status === "SUSPENDED"
     ).length;
 
     const monthlyRevenue = await this.calculateMonthlyRevenue(
@@ -81,6 +81,7 @@ export class GetGymMetricsUseCase {
 
     for (const client of activeClients) {
       const lastPaymentDate = client.subscriptionLastPayment;
+      console.log("lastPaymentDate", lastPaymentDate);
       if (lastPaymentDate) {
         const paymentDate = new Date(lastPaymentDate);
 

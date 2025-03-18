@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import Image from "next/image";
 import { useActionState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { loginAction } from "@/lib/actions";
+import { DynamicIconLogo } from "./dynamic-icon-logo";
 
 export function LoginForm() {
   const [, dispatchAction, isPending] = useActionState(
@@ -30,7 +30,7 @@ export function LoginForm() {
               className="flex flex-col items-center gap-2 font-medium"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-md">
-                <Image src="/dark-icon.svg" alt="Logo" width={32} height={32} />
+                <DynamicIconLogo width={32} height={32} alt={"Logo"} />{" "}
               </div>
               <span className="sr-only">Iost</span>
             </a>

@@ -5,61 +5,37 @@ import { AccountAlreadyExists } from "../errors/AccountAlreadExists";
 import { InvalidFormatUUID } from "../errors/InvalidFormatUUID";
 import { SubscriptionNotFound } from "../errors/SubscriptionNotFound";
 import { CreateGymClientUseCase } from "../useCases/gym-client/CreateGymClientUseCase";
+import { CreateBillingUseCase } from "../useCases/charge/CreateBillingUseCase";
 
-const schema = z.object({
-  email: z.string().email(),
-  phone: z.string(),
-  name: z.string(),
-  subscriptionId: z.string().uuid(),
-  taxId: z.string(),
-});
+export class CreateBillingController implements IController {
+  constructor(private readonly createBillingUseCase: CreateBillingUseCase) {}
 
-export class CreateGymClientController implements IController {
-  constructor(
-    private readonly createGymClientUseCase: CreateGymClientUseCase
-  ) {}
-
-  async handle({ body, params }: IRequest): Promise<IResponse> {
+  async handle({ body }: IRequest): Promise<IResponse> {
     try {
-      const { userId } = params;
-      const {
-        email: client_email,
-        name: client_name,
-        phone: client_phone,
-        subscriptionId,
-        taxId,
-      } = schema.parse(body);
+      const { completionUrl, customerId, products, returnUrl } = body;
 
-      const {
-        id,
-        createdAt,
-        email,
-        name,
-        phone,
-        status,
-        updatedAt,
-        abacatePayCustomerId,
-      } = await this.createGymClientUseCase.execute({
-        email: client_email,
-        name: client_name,
-        phone: client_phone,
-        userId,
-        subscriptionId,
-        taxId,
+      if (!customerId || !products || !returnUrl || !completionUrl) {
+        return {
+          statusCode: 400,
+          body: {
+            message: "Missing required fields",
+          },
+        };
+      }
+
+      const { url } = await this.createBillingUseCase.execute({
+        completionUrl,
+        customerId,
+        products,
+        returnUrl,
       });
+
+      console.log("URL", url);
 
       return {
         statusCode: 200,
         body: {
-          id,
-          name,
-          email,
-          phone,
-          status,
-          createdAt,
-          updatedAt,
-          taxId,
-          abacatePayCustomerId,
+          url,
         },
       };
     } catch (err) {

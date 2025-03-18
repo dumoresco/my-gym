@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
@@ -32,8 +31,12 @@ export function NavMain({
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem>
-            <Link className={`flex items-center  gap-2 `} href={item.url}>
+          <SidebarMenuItem key={item.url}>
+            <Link
+              className={`flex items-center  gap-2 `}
+              href={item.url}
+              key={item.url}
+            >
               <SidebarMenuButton tooltip={item.title}>
                 {item.icon && <item.icon size={16} />}
                 <span>{item.title}</span>

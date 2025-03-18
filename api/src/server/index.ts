@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cron from "node-cron";
 
 import { routeAdapter } from "./adapters/routeAdapter";
@@ -18,6 +18,9 @@ import { makeGetAllGymClientsController } from "../factories/gym-client/makeGetA
 import cors from "cors";
 import { makeGetLastSixMonthsPaymentController } from "../factories/payment/makeGetLastSixPaymentsController";
 import { makeGetPaymentController } from "../factories/payment/makeGetPaymentsController";
+import { makeCreateBillingController } from "../factories/billing/makeCreateBillingController";
+import { IRequest } from "../application/interfaces/IController";
+import { startWebSocketServer } from "./wsServer";
 
 const app = express();
 app.use(express.json());
@@ -86,6 +89,36 @@ router.get(
   routeAdapter(makeGetPaymentController())
 );
 
+router.post(
+  "/billing",
+  middlewareAdapter(makeAuthenticationMiddleware()),
+  routeAdapter(makeCreateBillingController())
+);
+
+app.post("/webhook/abacatepay", (req: any, res: any) => {
+  // Obter o webhookSecret da query string
+  const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+  const { webhookSecret } = req.query;
+
+  // Verificar se o segredo corresponde ao esperado
+  if (webhookSecret !== WEBHOOK_SECRET) {
+    return res.status(403).send("Forbidden: Invalid Webhook Secret");
+  }
+
+  // Verificar se o corpo da requisição contém os dados do pagamento
+  const payload = req.body;
+
+  // Exemplo de estrutura do payload - adapte conforme o serviço
+  if (payload && payload.paymentStatus === "success") {
+    console.log("Pagamento realizado com sucesso!", payload);
+    // Aqui você pode realizar qualquer lógica adicional, como atualizar o status do pagamento no seu banco de dados
+    return res.status(200).send("Pagamento recebido e processado com sucesso!");
+  } else {
+    console.log("Pagamento não realizado ou inválido!", payload);
+    return res.status(400).send("Pagamento não confirmado");
+  }
+});
+
 app.use("/api", router);
 
 app.listen(3000, () => {
@@ -93,6 +126,8 @@ app.listen(3000, () => {
 });
 
 const CRON_JOB_TIME = "*/1 * * * *";
+
+startWebSocketServer(app);
 
 cron.schedule(CRON_JOB_TIME, () => {
   console.log("Rodando verificação de pagamentos...");

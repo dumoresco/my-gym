@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "next-auth/react";
 import { ReactQueryProvider } from "@/components/react-query-provider";
+import { Toaster } from "@/components/ui/sonner";
 const figtree = Figtree({
   subsets: ["latin"],
 });
@@ -24,6 +25,8 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ReactQueryProvider>
+          <Toaster />
+
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
