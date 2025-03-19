@@ -20,6 +20,7 @@ RUN echo "Iniciando build da aplicação..." && yarn build && echo "Build conclu
 EXPOSE 3000
 
 
+RUN npx prisma generate
 
 
 # Iniciar a aplicação
