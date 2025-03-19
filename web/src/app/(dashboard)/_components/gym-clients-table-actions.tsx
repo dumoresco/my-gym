@@ -11,6 +11,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { EditGymClientDrawer } from "./edit-gym-client-drawer";
 
+import { GenerateBillingDialog } from "./generate-billing-dialog";
+
 export const GymClientsTableActions = ({ client }: { client: any }) => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -34,12 +36,8 @@ export const GymClientsTableActions = ({ client }: { client: any }) => {
           <EditGymClientDrawer client={client} session={session!} />
         </DropdownMenuItem>
         {client.paymentStatus === "UNPAID" && (
-          <DropdownMenuItem
-            onClick={() => {
-              router.push(`/alunos/${client.id}/pagamento`);
-            }}
-          >
-            Gerar cobrança
+          <DropdownMenuItem asChild>
+            <GenerateBillingDialog client={client} session={session!} />
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

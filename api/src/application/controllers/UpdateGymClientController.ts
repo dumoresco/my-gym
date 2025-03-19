@@ -67,9 +67,6 @@ export class UpdateGymClientController implements IController {
           subscriptionId: subscriptionId || current_client.subscriptionId,
           status: (client_status as GymClientStatus) || current_client.status,
           clientID: current_client.id,
-          paymentStatus:
-            (client_paymentStatus as PaymentStatus) ||
-            current_client.paymentStatus,
         });
 
       // pega o valor do subscriptionId do cliente atual
@@ -83,27 +80,6 @@ export class UpdateGymClientController implements IController {
         throw new SubscriptionNotFound();
       }
 
-      if (
-        client_paymentStatus === "PAID" &&
-        current_client.paymentStatus !== "PAID"
-      ) {
-        await this.createPaymentUseCase.execute({
-          clientId: current_client.id,
-          value: subscription.price,
-          paymentDate: new Date(),
-          subscriptionId: current_client.subscriptionId,
-        });
-
-        await prismaClient.gymClient.update({
-          where: {
-            id: current_client.id,
-          },
-          data: {
-            subscriptionLastPayment: new Date(),
-          },
-        });
-      }
-
       return {
         statusCode: 200,
         body: {
@@ -114,7 +90,6 @@ export class UpdateGymClientController implements IController {
           status,
           createdAt,
           updatedAt,
-          paymentStatus: client_paymentStatus || PaymentStatus.PAID,
         },
       };
     } catch (err) {

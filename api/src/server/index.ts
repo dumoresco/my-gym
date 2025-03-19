@@ -19,13 +19,35 @@ import cors from "cors";
 import { makeGetLastSixMonthsPaymentController } from "../factories/payment/makeGetLastSixPaymentsController";
 import { makeGetPaymentController } from "../factories/payment/makeGetPaymentsController";
 import { makeCreateBillingController } from "../factories/billing/makeCreateBillingController";
-import { IRequest } from "../application/interfaces/IController";
-import { startWebSocketServer } from "./wsServer";
+import { CreatePaymentUseCase } from "../application/useCases/payment/CreatePaymentUseCase";
+import { prismaClient } from "../application/libs/prismaClient";
+import { Server } from "socket.io";
+import http from "http";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 const router = express.Router();
+
+const server = http.createServer(app); // Usa o mesmo servidor HTTP
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("🟢 Cliente conectado:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("🔴 Cliente desconectado:", socket.id);
+  });
+  console.log("🟢 Cliente conectado:", socket.id);
+  socket.on("notification", (data) => {
+    console.log("📩 Notificação recebida:", data);
+    io.emit("notification", data); // Reenvia para todos os clientes conectados
+  });
+});
 
 router.post("/sign-up", routeAdapter(makeSignUpController()));
 router.post("/sign-in", routeAdapter(makeSignInController()));
@@ -95,39 +117,49 @@ router.post(
   routeAdapter(makeCreateBillingController())
 );
 
-app.post("/webhook/abacatepay", (req: any, res: any) => {
-  // Obter o webhookSecret da query string
-  const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-  const { webhookSecret } = req.query;
-
-  // Verificar se o segredo corresponde ao esperado
-  if (webhookSecret !== WEBHOOK_SECRET) {
-    return res.status(403).send("Forbidden: Invalid Webhook Secret");
-  }
-
-  // Verificar se o corpo da requisição contém os dados do pagamento
-  const payload = req.body;
-
-  // Exemplo de estrutura do payload - adapte conforme o serviço
-  if (payload && payload.paymentStatus === "success") {
-    console.log("Pagamento realizado com sucesso!", payload);
-    // Aqui você pode realizar qualquer lógica adicional, como atualizar o status do pagamento no seu banco de dados
-    return res.status(200).send("Pagamento recebido e processado com sucesso!");
-  } else {
-    console.log("Pagamento não realizado ou inválido!", payload);
-    return res.status(400).send("Pagamento não confirmado");
-  }
-});
-
 app.use("/api", router);
+
+app.post("/api/webhook/abacatepay", async (req: Request, res: Response) => {
+  const { data } = req.body;
+  console.log("Webhook recebido:", data);
+
+  const { customer, amount, status, products } = data.billing;
+  const paymentUseCase = new CreatePaymentUseCase();
+
+  const amountInCents = parseInt(amount);
+  const value = amountInCents / 100;
+
+  paymentUseCase.execute({
+    email: customer.metadata.email,
+    paymentDate: new Date(),
+    subscriptionId: products[0].externalId,
+    value,
+  });
+
+  await prismaClient.gymClient.update({
+    where: {
+      email: customer.metadata.email,
+    },
+    data: {
+      subscriptionLastPayment: new Date(),
+      paymentStatus: status,
+    },
+  });
+
+  io.emit("notification", {
+    message: `Pagamento de ${value} aprovado para ${customer.metadata.email}`,
+  });
+
+  res.status(200).send();
+});
 
 app.listen(3000, () => {
   console.log("🚀 Servidor rodando na porta 3000");
 });
 
-const CRON_JOB_TIME = "*/1 * * * *";
+io.listen(8080);
 
-startWebSocketServer(app);
+const CRON_JOB_TIME = "*/1 * * * *";
 
 cron.schedule(CRON_JOB_TIME, () => {
   console.log("Rodando verificação de pagamentos...");

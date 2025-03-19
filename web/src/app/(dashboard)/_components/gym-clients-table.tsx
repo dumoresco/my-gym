@@ -6,6 +6,8 @@ import { Session } from "next-auth";
 import DataTable from "@/components/ui/data-table";
 import { gymClientsTable } from "../alunos/columns";
 import { useEffect } from "react";
+import socket from "@/config/socket";
+import { useCustomSooner } from "@/hooks/use-custom-sooner";
 
 type SubscriptionResponse = {
   gymClients: {
@@ -19,24 +21,23 @@ type SubscriptionResponse = {
 };
 
 export const GymClientsTable = ({ session }: { session: Session }) => {
+  const { successSooner } = useCustomSooner();
   useEffect(() => {
-    // Conectar ao WebSocket
-    const ws = new WebSocket("ws://localhost:3000"); // URL do servidor WebSocket
+    // Conexão automática
+    socket.connect();
+    console.log(socket.connected); // false
+    console.log("Conectado ao WebSocket:", socket.id);
 
-    ws.onopen = () => {
-      console.log("Conectado ao servidor WebSocket");
-    };
+    // Escutando o evento 'notification'
+    socket.on("notification", (data) => {
+      console.log("Notificação recebida", data.message);
+      successSooner(` 🎉 ${data.message}`);
+      // Aqui você pode tratar a notificação, exibir uma toast, ou atualizar o estado da UI
+    });
 
-    ws.onmessage = (event) => {
-      console.log("Mensagem recebida:", event.data);
-    };
-
-    ws.onerror = (error) => {
-      console.error("Erro no WebSocket:", error);
-    };
-
+    // Cleanup na desmontagem do componente
     return () => {
-      ws.close(); // Fechar a conexão quando o componente for desmontado
+      socket.off("notification"); // Desassociar o evento quando o componente for desmontado
     };
   }, []);
 

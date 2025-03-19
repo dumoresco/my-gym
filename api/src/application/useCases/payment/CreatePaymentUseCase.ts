@@ -7,7 +7,7 @@ import { InvalidFormatUUID } from "../../errors/InvalidFormatUUID";
 import { GymClientRepository } from "../../repositories/GymClientRepository";
 import { SubscriptionNotFound } from "../../errors/SubscriptionNotFound";
 interface IInputCreatePaymentUseCase {
-  clientId: string;
+  email: string;
   value: number;
   paymentDate: Date;
   subscriptionId: string;
@@ -25,20 +25,15 @@ export class CreatePaymentUseCase {
   constructor() {}
 
   async execute({
-    clientId,
+    email,
     paymentDate,
     subscriptionId,
     value,
   }: IInputCreatePaymentUseCase): Promise<IOutputCreatePaymentUseCase> {
-    const isValidUUID = validateUUID(clientId);
-
-    if (!isValidUUID) {
-      throw new InvalidFormatUUID();
-    }
-
-    const userExists = await prismaClient.gymClient.findUnique({
+    // pega o client pelo abacatePayCustomerId, que é diferente do id do usuario
+    const client = await prismaClient.gymClient.findUnique({
       where: {
-        id: clientId,
+        email,
       },
     });
 
@@ -48,7 +43,7 @@ export class CreatePaymentUseCase {
       },
     });
 
-    if (!userExists) {
+    if (!client) {
       throw new UserNotFound();
     }
 
@@ -58,7 +53,7 @@ export class CreatePaymentUseCase {
 
     const payment = await prismaClient.payment.create({
       data: {
-        clientId,
+        clientId: client.id,
         amount: value,
         paymentDate,
         subscriptionId,

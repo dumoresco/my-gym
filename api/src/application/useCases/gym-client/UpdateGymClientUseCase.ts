@@ -11,7 +11,6 @@ interface IInputUpdateGymClientUseCase {
   status: GymClientStatus;
   clientID: string;
   subscriptionId: string;
-  paymentStatus: PaymentStatus;
 }
 
 interface IOutputUpdateGymClientUseCase {
@@ -24,7 +23,6 @@ interface IOutputUpdateGymClientUseCase {
   updatedAt: Date;
   inactiveAt?: Date;
   subscriptionId: string;
-  paymentStatus: PaymentStatus;
 }
 
 export class UpdateGymClientUseCase {
@@ -35,7 +33,6 @@ export class UpdateGymClientUseCase {
     subscriptionId,
     clientID,
     status,
-    paymentStatus,
   }: IInputUpdateGymClientUseCase): Promise<IOutputUpdateGymClientUseCase> {
     const gymClientAlreadyExists = await prismaClient.gymClient.findUnique({
       where: {
@@ -66,7 +63,6 @@ export class UpdateGymClientUseCase {
         phone,
         status,
         subscriptionId,
-        paymentStatus,
       },
     });
     return {
@@ -78,7 +74,6 @@ export class UpdateGymClientUseCase {
       createdAt: gymClient.createdAt,
       updatedAt: gymClient.updatedAt,
       subscriptionId: gymClient.subscriptionId,
-      paymentStatus: gymClient.paymentStatus ?? PaymentStatus.PAID,
     };
   }
 }

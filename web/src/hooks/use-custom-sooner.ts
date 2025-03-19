@@ -7,6 +7,7 @@ export const useCustomSooner = () => {
       style: {
         backgroundColor: "#34D399",
         color: "#ffffff",
+        fontWeight: "bold",
       },
     });
   };

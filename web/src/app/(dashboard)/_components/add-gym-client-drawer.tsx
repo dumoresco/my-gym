@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
 
-type SubscriptionResponse = {
+export type SubscriptionResponse = {
   subscriptions: {
     id: string;
     name: string;

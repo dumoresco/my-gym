@@ -6,7 +6,9 @@ export default auth((request) => {
 
   const { pathname } = request.nextUrl;
 
-  const isPrivatePath = pathname.startsWith("/dashboard");
+  const isPrivatePath = ["/dashboard", "/alunos", "/planos"].some((path) =>
+    pathname.startsWith(path)
+  );
 
   if (isLogged && !isPrivatePath) {
     return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
@@ -18,5 +20,14 @@ export default auth((request) => {
 });
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path", "/sign-in", "/sign-up"],
+  matcher: [
+    "/dashboard",
+    "/dashboard/:path",
+    "/sign-in",
+    "/sign-up",
+    "/alunos",
+    "/alunos/:path",
+    "/planos",
+    "/planos/:path",
+  ],
 };
