@@ -153,8 +153,10 @@ app.post("/api/webhook/abacatepay", async (req: Request, res: Response) => {
   res.status(200).send();
 });
 
-app.listen(3000, () => {
-  console.log("🚀 Servidor rodando na porta 3000");
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 io.listen(8080);
