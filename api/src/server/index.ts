@@ -155,11 +155,16 @@ app.post("/api/webhook/abacatepay", async (req: Request, res: Response) => {
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+app.listen(
+  {
+    port,
+  },
+  () => {
+    console.log(`Server is running on port ${port}`);
+  }
+);
 
-io.listen(8080);
+io.listen(3002);
 
 const CRON_JOB_TIME = "*/1 * * * *";
 
