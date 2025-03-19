@@ -5,7 +5,7 @@ import axios from "axios";
 import { useEffect } from "react";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://my-gym-509205781049.us-central1.run.app/api",
   headers: {
     "Content-Type": "application/json",
     "Allow-Control-Allow-Origin": "*",

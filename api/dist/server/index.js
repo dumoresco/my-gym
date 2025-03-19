@@ -98,10 +98,13 @@ app.post("/api/webhook/abacatepay", (req, res) => __awaiter(void 0, void 0, void
     });
     res.status(200).send();
 }));
-app.listen(3000, () => {
-    console.log("🚀 Servidor rodando na porta 3000");
+const port = 3000;
+app.listen({
+    port,
+}, () => {
+    console.log(`Server is running on port ${port}`);
 });
-io.listen(8080);
+io.listen(3002);
 const CRON_JOB_TIME = "*/1 * * * *";
 node_cron_1.default.schedule(CRON_JOB_TIME, () => {
     console.log("Rodando verificação de pagamentos...");

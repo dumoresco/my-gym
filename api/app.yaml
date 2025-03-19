@@ -1,0 +1,38 @@
+runtime: nodejs
+service: my-gym
+env: flex
+runtime_config:
+  operating_system: "ubuntu22"
+  runtime_version: "20"
+manual_scaling:
+  instances: 1
+env_variables:
+  DATABASE_URL: "postgresql://postgres:root@35.238.101.4:5432/my-gym?socket=/cloudsql/project-name:my-gym-454216:us-central1:root"
+
+# automatic_scaling:
+#   cpu_utilization:
+#     target_utilization: 0.6
+# cool_down_period_sec: 60
+# cpu_utilization:
+#   target_utilization: 0.6
+
+resources:
+  cpu: 2
+  memory_gb: 2
+  disk_size_gb: 10
+
+beta_settings:
+  cloud_sql_instances: "lmy-gym-454216:us-central1:root=tcp:5432"
+# liveness_check:
+#   path: "/ping"
+#   check_interval_sec: 60  # Intervalo de verificação, por exemplo, a cada 60 segundos
+#   timeout_sec: 4  # Tempo de espera para uma resposta antes de considerar que falhou
+#   failure_threshold: 3  # Número de falhas antes de considerar a instância como não viva
+#   success_threshold: 1  # Número de sucessos para considerar a instância viva novamente
+
+# readiness_check:
+#   path: "/ping"
+#   check_interval_sec: 60  # Intervalo de verificação, por exemplo, a cada 60 segundos
+#   timeout_sec: 4  # Tempo de espera para uma resposta antes de considerar que falhou
+#   failure_threshold: 3  # Número de falhas antes de considerar a instância não pronta
+#   success_threshold: 1  # Número de sucessos para considerar a instância pronta

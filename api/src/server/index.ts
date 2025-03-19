@@ -153,7 +153,7 @@ app.post("/api/webhook/abacatepay", async (req: Request, res: Response) => {
   res.status(200).send();
 });
 
-const port = process.env.PORT || 8080;
+const port = 3000;
 
 app.listen(
   {
