@@ -43,7 +43,7 @@ export const EditGymClientDrawer = ({
   const form = useForm<z.infer<typeof updateGymClientSchema>>({
     resolver: zodResolver(updateGymClientSchema),
     defaultValues: {
-      name: client.name,
+      name: client?.name,
       email: client.email,
       status: client.status,
       phone: client.phone,

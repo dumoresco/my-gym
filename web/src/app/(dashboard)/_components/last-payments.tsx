@@ -64,10 +64,12 @@ export const LastPayments = ({ session }: { session: Session }) => {
             <div className="flex items-center justify-between ">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="text-md font-semibold ">{payment.name}</span>
+                  <span className="text-md font-semibold ">
+                    {payment?.name}
+                  </span>
                   |
                   <span className="text-sm text-muted-foreground">
-                    {payment.subscription.name}
+                    {payment.subscription?.name}
                   </span>
                 </div>
                 <span className="text-sm text-muted-foreground">

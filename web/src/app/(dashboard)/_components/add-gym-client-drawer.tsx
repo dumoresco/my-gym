@@ -174,7 +174,7 @@ export const AddGymClientDrawer = ({ session }: { session: Session }) => {
                                 key={subscription.id}
                                 value={subscription.id}
                               >
-                                {subscription.name}
+                                {subscription?.name}
                               </SelectItem>
                             ))
                           )}

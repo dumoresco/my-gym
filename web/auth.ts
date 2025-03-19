@@ -45,7 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return {
             id: response.data.id,
             email: response.data.email,
-            name: response.data.name,
+            name: response?.data?.name,
             accessToken: response.data.accessToken,
           };
         } catch {}

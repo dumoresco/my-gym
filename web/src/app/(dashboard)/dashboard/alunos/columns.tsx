@@ -30,7 +30,7 @@ export const gymClientsTable: ColumnDef<GymClient>[] = [
     cell: ({ row }) => {
       return (
         <div>
-          <div>{row.original.name}</div>
+          <div>{row?.original?.name}</div>
           <div className="text-sm text-gray-500">{row.original.email}</div>
         </div>
       );
