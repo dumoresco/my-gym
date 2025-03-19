@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SubscriptionResponse } from "./add-gym-client-drawer";
 import { useAxiosInterceptor } from "@/hooks/use-axios-interceptor";
-import Image from "next/image";
 import { LoaderCircle } from "lucide-react";
 import { useCustomSooner } from "@/hooks/use-custom-sooner";
 import socket from "@/config/socket";
@@ -108,7 +107,7 @@ export const GenerateBillingDialog = ({
     console.log(socket.connected);
     console.log("Conectado ao WebSocket:", socket.id);
 
-    socket.on("notification", (data) => {
+    socket.on("notification", () => {
       queryClient.invalidateQueries({
         queryKey: ["gym-clients"],
         exact: true,

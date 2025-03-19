@@ -23,12 +23,12 @@ const data = {
     },
     {
       title: "Alunos",
-      url: "/alunos",
+      url: "/dashboard/alunos",
       icon: Users,
     },
     {
       title: "Planos",
-      url: "/planos",
+      url: "/dashboard/planos",
       icon: FileText,
     },
   ],

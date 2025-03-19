@@ -1,6 +1,6 @@
-import { auth } from "../../../../auth";
-import { AddGymClientDrawer } from "../_components/add-gym-client-drawer";
-import { GymClientsTable } from "../_components/gym-clients-table";
+import { auth } from "../../../../../auth";
+import { AddGymClientDrawer } from "../../_components/add-gym-client-drawer";
+import { GymClientsTable } from "../../_components/gym-clients-table";
 
 export default async function AlunosPage() {
   const session = await auth();

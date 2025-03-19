@@ -27,7 +27,7 @@ export const GymClientsTableActions = ({ client }: { client: any }) => {
       <DropdownMenuContent>
         <DropdownMenuItem
           onClick={() => {
-            router.push(`/alunos/${client.id}`);
+            router.push(`/dashboard/alunos/${client.id}`);
           }}
         >
           Visualizar

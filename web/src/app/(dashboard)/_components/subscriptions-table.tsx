@@ -3,8 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAxiosInterceptor } from "@/hooks/use-axios-interceptor";
 import { Session } from "next-auth";
-import { columns } from "../planos/columns";
 import DataTable from "@/components/ui/data-table";
+import { columns } from "../dashboard/planos/columns";
 
 type SubscriptionResponse = {
   subscriptions: {

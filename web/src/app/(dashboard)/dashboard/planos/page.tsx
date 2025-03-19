@@ -1,6 +1,6 @@
-import { auth } from "../../../../auth";
-import { SubscriptionTable } from "../_components/subscriptions-table";
-import { AddSubscriptionDrawer } from "../_components/add-subscription-drawer";
+import { auth } from "../../../../../auth";
+import { AddSubscriptionDrawer } from "../../_components/add-subscription-drawer";
+import { SubscriptionTable } from "../../_components/subscriptions-table";
 
 export default async function SubscriptionPage() {
   const session = await auth();

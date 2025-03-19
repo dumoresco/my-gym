@@ -27,7 +27,7 @@ export const SubscriptionTableActions = ({ id }: { id: string }) => {
       <DropdownMenuContent>
         <DropdownMenuItem
           onClick={() => {
-            router.push(`/planos/${id}`);
+            router.push(`/dashboard/planos/${id}`);
           }}
         >
           Visualizar

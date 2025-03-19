@@ -35,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
           const response = await axios.post(
-            "http://localhost:3000/api/sign-in",
+            "https://my-gym-jyqhaxpokq-uc.a.run.app/api/sign-in",
             {
               email,
               password,

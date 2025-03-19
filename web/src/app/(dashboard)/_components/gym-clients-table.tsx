@@ -4,10 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useAxiosInterceptor } from "@/hooks/use-axios-interceptor";
 import { Session } from "next-auth";
 import DataTable from "@/components/ui/data-table";
-import { gymClientsTable } from "../alunos/columns";
 import { useEffect } from "react";
 import socket from "@/config/socket";
 import { useCustomSooner } from "@/hooks/use-custom-sooner";
+import { gymClientsTable } from "../dashboard/alunos/columns";
 
 type SubscriptionResponse = {
   gymClients: {

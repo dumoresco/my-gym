@@ -6,7 +6,7 @@ export default auth((request) => {
 
   const { pathname } = request.nextUrl;
 
-  const isPrivatePath = ["/dashboard", "/alunos", "/planos"].some((path) =>
+  const isPrivatePath = ["/dashboard"].some((path) =>
     pathname.startsWith(path)
   );
 
@@ -20,14 +20,5 @@ export default auth((request) => {
 });
 
 export const config = {
-  matcher: [
-    "/dashboard",
-    "/dashboard/:path",
-    "/sign-in",
-    "/sign-up",
-    "/alunos",
-    "/alunos/:path",
-    "/planos",
-    "/planos/:path",
-  ],
+  matcher: ["/dashboard", "/dashboard/:path", "/sign-in", "/sign-up"],
 };
